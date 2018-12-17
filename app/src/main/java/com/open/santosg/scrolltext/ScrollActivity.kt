@@ -1,7 +1,10 @@
 package com.open.santosg.scrolltext
 
+import android.annotation.TargetApi
+import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.drawable.GradientDrawable
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
@@ -12,9 +15,19 @@ import kotlinx.android.synthetic.main.activity_scroll.*
 import org.w3c.dom.Text
 import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable.ShapeDrawable
+import android.os.Build
 import android.os.Message
+import android.support.annotation.RequiresApi
+import android.support.v4.view.GestureDetectorCompat
+import android.support.v4.view.ViewCompat
+import android.support.v4.view.ViewCompat.setBackground
+import android.support.v4.widget.TextViewCompat
 import android.text.Editable
 import android.text.TextUtils
+import android.view.GestureDetector
+import android.view.GestureDetector.OnDoubleTapListener
+import android.view.GestureDetector.OnGestureListener
+import android.view.MotionEvent
 import android.view.animation.AnimationUtils
 import android.widget.SeekBar
 import android.widget.Toast
@@ -22,7 +35,53 @@ import android.widget.Toast
 var redValue1: Int = 0
 
 
-class ScrollActivity : AppCompatActivity() {
+class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListener {
+
+    //Implement methods for GestureDetecton
+    override fun onShowPress(e: MotionEvent?) {
+    }
+
+    override fun onSingleTapUp(e: MotionEvent?): Boolean {
+        return true
+    }
+
+    override fun onDown(e: MotionEvent?): Boolean {
+        return true
+    }
+
+    override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
+        return true
+    }
+
+    override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+        return true
+    }
+
+    override fun onLongPress(e: MotionEvent?) {
+    }
+
+    override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+        return true
+    }
+
+    override fun onDoubleTapEvent(e: MotionEvent?): Boolean {
+        //System.out.println("Double-Tap")
+        hideGUI = true
+        if (hideGUI == true) {
+            hideGUI = false
+            println("Visible")
+            backgroundColourButton.visibility = View.VISIBLE
+            changeTextButton.visibility = View.VISIBLE
+            hideGUIButton.visibility = View.VISIBLE
+        }
+        return true
+    }
+
+    override fun onDoubleTap(e: MotionEvent?): Boolean {
+        //println(e)
+        //println("Double-Tap")
+        return true
+    }
 
 
     var redValue2: Int = 0
@@ -32,12 +91,39 @@ class ScrollActivity : AppCompatActivity() {
     var greenValue3: Int = 0
     var message: String = "Default Text"
     var hideGUI: Boolean = false
+    var gDetector: GestureDetectorCompat? = null
+   // var gestureDetectorCompat: GestureDetectorCompat? = null
+    var gd = GradientDrawable();
 
-
+    @TargetApi(Build.VERSION_CODES.O)
+    //@RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scroll)
         supportActionBar!!.hide()
+
+        //Change Colours of the buttons and add customised corners
+        gd.shape = GradientDrawable.RECTANGLE
+        gd.setColor(Color.TRANSPARENT)
+        gd.setStroke(5,Color.BLACK);
+        gd.cornerRadius = 100.0f
+        hideGUIButton.setBackground(gd)
+        changeTextButton.setBackground(gd)
+        gd.setSize(320,50)
+        backgroundColourButton.width = 320
+        backgroundColourButton.setBackground(gd)
+        //backgroundColourButton.minWidth = 100
+        //backgroundColourButton.auto
+
+
+
+        //.setAutoSizeTextTypeUniformWithConfiguration(12,112,1,1)
+
+       // gestureDetectorCompat = GestureDetectorCompat(this, this)
+       // gestureDetectorCompat!!.setOnDoubleTapListener(this)
+
+        this.gDetector = GestureDetectorCompat(this,this)
+        gDetector?.setOnDoubleTapListener(this)
 
         //Create a TextView and print Dingo to System when it's created
         val scrollTextView = findViewById<TextView>(R.id.scrollTextView)
@@ -45,7 +131,7 @@ class ScrollActivity : AppCompatActivity() {
         scrollTextView.text = "Welcome to ScrollText"
 
         //Scroll the TextView
-        scrollTextView.textSize = 50f
+        scrollTextView.textSize = 150f
         scrollTextView.ellipsize = TextUtils.TruncateAt.MARQUEE
         scrollTextView.setHorizontallyScrolling(true)
         scrollTextView.setLines(1)
@@ -53,9 +139,9 @@ class ScrollActivity : AppCompatActivity() {
         scrollTextView.setSingleLine(true)
         scrollTextView.isSelected = true
 
-
         scrollTextView.setOnClickListener {
             createDialogPrompt()
+
             //Test Code to scroll the textView
 
             /*
@@ -71,31 +157,43 @@ class ScrollActivity : AppCompatActivity() {
 
         }
 
+        //println("Background")
+        val backgroundColourButton: Button = findViewById(R.id.backgroundColourButton)
+        backgroundColourButton.text = "Background"
+        backgroundColourButton.setOnClickListener {
+            createColourPicker()
+
+        }
+        val changeTextButton: Button = findViewById(R.id.changeTextButton)
+        changeTextButton.text = "Text"
+        changeTextButton.setOnClickListener {
+            createColourPicker()
+        }
+
 
         //Create the hide interface buttons
         val hideButton: Button = findViewById(R.id.hideGUIButton)
         hideButton.setOnClickListener {
             if (hideGUI == false) {
-                hideGUI == true
+                hideGUI = true
+
+                Toast.makeText(this,"Double-Tap to reveal buttons",Toast.LENGTH_SHORT).show()
+                backgroundColourButton.visibility = View.INVISIBLE
+                hideGUIButton.visibility = View.INVISIBLE
+                changeTextButton.visibility = View.INVISIBLE
+
+                //this.findViewById(R.layout.activity_scroll).getRootView().invalidate();
+                //this.findViewById(android.R.id.content).getRootView().requestLayout();
+                System.out.print("false")
+
             } else if (hideGUI == true) {
-                hideGUI == false
-            }
-        }
+                hideGUI = false
 
-        if (hideGUI == false) {
-            //Create Change Colour Button for Background
-            val backgroundColourButton: Button = findViewById(R.id.backgroundColourButton)
-            backgroundColourButton.text = "Background"
-            backgroundColourButton.setOnClickListener {
-                createColourPicker()
+                backgroundColourButton.visibility = View.VISIBLE
+                hideButton.visibility = View.VISIBLE
+                changeTextButton.visibility = View.VISIBLE
 
             }
-        }else{
-            backgroundColourButton.visibility = View.INVISIBLE
-            hideButton.visibility = View.INVISIBLE
-            //this.findViewById(R.layout.activity_scroll).getRootView().invalidate();
-            //this.findViewById(android.R.id.content).getRootView().requestLayout();
-
         }
 
     }
@@ -116,6 +214,8 @@ class ScrollActivity : AppCompatActivity() {
         val seekBarGreen = SeekBar(this)
         val seekBarBlue = SeekBar(this)
         seekBarRed.max = 255
+
+
         seekBarGreen.max = 255
         seekBarBlue.max = 255
 
@@ -193,7 +293,7 @@ class ScrollActivity : AppCompatActivity() {
         builder.setView(seekBarRed)
 
         builder.setPositiveButton("DONE") { dialog, which ->
-            Toast.makeText(this, "Thanks for picking the colour", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Thanks for picking the colour", Toast.LENGTH_SHORT).show()
 
 
         }
@@ -220,7 +320,7 @@ class ScrollActivity : AppCompatActivity() {
 
         //Setting Positive button interactions, also error handling for if text is null or empty/
         builder.setPositiveButton("DONE") { dialog, which ->
-            Toast.makeText(this, "Thanks for entering the message", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Thanks for entering the message", Toast.LENGTH_SHORT).show()
             if (input.text == null) {
                 Toast.makeText(this, "Invalid Text", Toast.LENGTH_SHORT).show()
             } else if (input.text.isEmpty()) {
@@ -235,7 +335,7 @@ class ScrollActivity : AppCompatActivity() {
         }
         //Set Negative button. pretty simple.
         builder.setNegativeButton("CANCEL") { dialog, which ->
-            Toast.makeText(this, "Canceled", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
         }
 
         val dialog: AlertDialog = builder.create()
@@ -244,5 +344,9 @@ class ScrollActivity : AppCompatActivity() {
 
     }
 
-
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        this.gDetector?.onTouchEvent(event)
+        // Be sure to call the superclass implementation
+        return super.onTouchEvent(event)
+    }
 }
