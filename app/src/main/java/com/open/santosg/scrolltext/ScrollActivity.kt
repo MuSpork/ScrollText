@@ -200,19 +200,16 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
         //val seekBarView: View = findViewById(R.id.dialogLayout)
         //seekBarView.layoutParams = LayoutParams(LayoutParams().WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
         //seekBarCollection
-
+        /*
         val lpd = LayoutParams(
             LayoutParams.MATCH_PARENT,
             LayoutParams.MATCH_PARENT
         )
-        dialogLayout.layoutParams = lpd
-
-
+        //dialogLayout.layoutParams = lpd
         dialogLayout.addView(seekBarRed)
         dialogLayout.addView(seekBarGreen)
         dialogLayout.addView(seekBarBlue)
-
-
+        */
 
         //Set seekbar colours
         //seekBarGreen.getProgressDrawable().setColorFilter(getResources().getColor(R.color.material_blue_grey_800), PorterDuff.Mode.MULTIPLY);
@@ -284,7 +281,7 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
             }
         })
 
-        builder.setView(dialogLayout)
+        builder.setView(seekBarRed)
 
         builder.setPositiveButton("DONE") { dialog, which ->
 
