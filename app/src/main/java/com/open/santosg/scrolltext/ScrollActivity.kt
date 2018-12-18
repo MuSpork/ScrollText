@@ -1,36 +1,24 @@
 package com.open.santosg.scrolltext
 
 import android.annotation.TargetApi
-import android.content.Context
+import android.app.ActionBar
 import android.graphics.Color
-import android.graphics.PorterDuff
+import android.graphics.Color.*
 import android.graphics.drawable.GradientDrawable
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
-import android.view.View
-import android.view.Window
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_scroll.*
-import org.w3c.dom.Text
-import android.graphics.drawable.shapes.OvalShape
-import android.graphics.drawable.ShapeDrawable
 import android.os.Build
-import android.os.Message
-import android.support.annotation.RequiresApi
 import android.support.v4.view.GestureDetectorCompat
-import android.support.v4.view.ViewCompat
-import android.support.v4.view.ViewCompat.setBackground
-import android.support.v4.widget.TextViewCompat
-import android.text.Editable
 import android.text.TextUtils
-import android.view.GestureDetector
-import android.view.GestureDetector.OnDoubleTapListener
-import android.view.GestureDetector.OnGestureListener
-import android.view.MotionEvent
+import android.view.*
 import android.view.animation.AnimationUtils
+import android.widget.LinearLayout.LayoutParams
 import android.widget.SeekBar
 import android.widget.Toast
+import kotlinx.android.synthetic.main.dialog.*
 
 var redValue1: Int = 0
 
@@ -102,25 +90,28 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
         setContentView(R.layout.activity_scroll)
         supportActionBar!!.hide()
 
+        //Set Background Colour to Black by default.
+        val view: View = findViewById(R.id.layoutScroll)
+        val root: View = view.rootView
+        root.setBackgroundColor(Color.rgb(0,0,0))
+
+        //Set the Text Colour, and button colours to contrast the background
+        scrollTextView.setTextColor(Color.rgb(255,255,255))
+        backgroundColourButton.setTextColor(Color.rgb(255,255,255))
+        changeTextButton.setTextColor(Color.rgb(255,255,255))
+        hideGUIButton.setTextColor(Color.rgb(255,255,255))
+
         //Change Colours of the buttons and add customised corners
         gd.shape = GradientDrawable.RECTANGLE
-        gd.setColor(Color.TRANSPARENT)
-        gd.setStroke(5,Color.BLACK);
+        gd.setColor(TRANSPARENT)
+        //gd.setColor(Color.rgb(255,255,255))
+        gd.setStroke(5, WHITE);
         gd.cornerRadius = 100.0f
         hideGUIButton.setBackground(gd)
         changeTextButton.setBackground(gd)
         gd.setSize(320,50)
         backgroundColourButton.width = 320
         backgroundColourButton.setBackground(gd)
-        //backgroundColourButton.minWidth = 100
-        //backgroundColourButton.auto
-
-
-
-        //.setAutoSizeTextTypeUniformWithConfiguration(12,112,1,1)
-
-       // gestureDetectorCompat = GestureDetectorCompat(this, this)
-       // gestureDetectorCompat!!.setOnDoubleTapListener(this)
 
         this.gDetector = GestureDetectorCompat(this,this)
         gDetector?.setOnDoubleTapListener(this)
@@ -139,21 +130,10 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
         scrollTextView.setSingleLine(true)
         scrollTextView.isSelected = true
 
+
+        //Button Listener to change the message of the scrolling text
         scrollTextView.setOnClickListener {
             createDialogPrompt()
-
-            //Test Code to scroll the textView
-
-            /*
-            scrollTextView.ellipsize = TextUtils.TruncateAt.MARQUEE
-            scrollTextView.setHorizontallyScrolling(true)
-            scrollTextView.setLines(1)
-            scrollTextView.marqueeRepeatLimit = -1
-            scrollTextView.setSingleLine(true)
-            scrollTextView.setSelected(true)*/
-
-            //scrollTextView.isSelected = true
-            //scrollTextView.ellipsize = TextUtils.TruncateAt.START
 
         }
 
@@ -182,8 +162,6 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
                 hideGUIButton.visibility = View.INVISIBLE
                 changeTextButton.visibility = View.INVISIBLE
 
-                //this.findViewById(R.layout.activity_scroll).getRootView().invalidate();
-                //this.findViewById(android.R.id.content).getRootView().requestLayout();
                 System.out.print("false")
 
             } else if (hideGUI == true) {
@@ -209,15 +187,32 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
         builder.setTitle("Colour")
 
         val seekBarCollection: View = View(this)
+        //val vg: ViewGroup = ViewGroup()//ViewGroup(this)
+        //vg.addView(seekBarCollection)
 
         val seekBarRed = SeekBar(this)
         val seekBarGreen = SeekBar(this)
         val seekBarBlue = SeekBar(this)
         seekBarRed.max = 255
-
-
         seekBarGreen.max = 255
         seekBarBlue.max = 255
+
+        //val seekBarView: View = findViewById(R.id.dialogLayout)
+        //seekBarView.layoutParams = LayoutParams(LayoutParams().WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+        //seekBarCollection
+
+        val lpd = LayoutParams(
+            LayoutParams.MATCH_PARENT,
+            LayoutParams.MATCH_PARENT
+        )
+        dialogLayout.layoutParams = lpd
+
+
+        dialogLayout.addView(seekBarRed)
+        dialogLayout.addView(seekBarGreen)
+        dialogLayout.addView(seekBarBlue)
+
+
 
         //Set seekbar colours
         //seekBarGreen.getProgressDrawable().setColorFilter(getResources().getColor(R.color.material_blue_grey_800), PorterDuff.Mode.MULTIPLY);
@@ -238,13 +233,12 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
         seekBar.thumb = thumb
         seekBar.progress = 1*/
 
-
-
         seekBarRed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 // Write code to perform some action when progress is changed.
                 redValue1 = progress
                 //System.out.println("Value of Red is: $redValue1 ")
+
                 callToast()
 
             }
@@ -289,12 +283,10 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
 
             }
         })
-        //builder.setView(seekBarGreen)
-        builder.setView(seekBarRed)
+
+        builder.setView(dialogLayout)
 
         builder.setPositiveButton("DONE") { dialog, which ->
-            Toast.makeText(this, "Thanks for picking the colour", Toast.LENGTH_SHORT).show()
-
 
         }
         builder.setNegativeButton("CANCEL") { dialog, which ->
@@ -305,14 +297,14 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
     }
 
     //Function to create a dialog Box for entering message
-    fun createDialogPrompt() {
+    private fun createDialogPrompt() {
         //Create the AlertDialog with a prompt to enter text and the EditText field to be edited.
         val builder = AlertDialog.Builder(this)
         builder.setMessage("Please Enter Message:")
         val input = EditText(this)
-        val lp = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.MATCH_PARENT
+        val lp = LayoutParams(
+            LayoutParams.MATCH_PARENT,
+            LayoutParams.MATCH_PARENT
         )
         input.layoutParams = lp
 
