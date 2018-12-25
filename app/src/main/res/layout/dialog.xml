@@ -3,4 +3,9 @@
                                              xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
                                              android:layout_height="match_parent" android:id="@+id/dialogLayout">
 
+    <LinearLayout
+            android:orientation="vertical"
+            tools:layout_editor_absoluteY="8dp"
+            tools:layout_editor_absoluteX="8dp" android:id="@+id/dialogLinearLayout">
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

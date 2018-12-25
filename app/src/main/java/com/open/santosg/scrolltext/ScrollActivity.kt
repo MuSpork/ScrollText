@@ -4,6 +4,7 @@ import android.annotation.TargetApi
 import android.app.ActionBar
 import android.graphics.Color
 import android.graphics.Color.*
+import android.graphics.Paint
 import android.graphics.drawable.GradientDrawable
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -11,7 +12,9 @@ import android.support.v7.app.AlertDialog
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_scroll.*
 import android.os.Build
+import android.support.annotation.RequiresApi
 import android.support.v4.view.GestureDetectorCompat
+import android.text.InputType
 import android.text.TextUtils
 import android.view.*
 import android.view.animation.AnimationUtils
@@ -19,8 +22,7 @@ import android.widget.LinearLayout.LayoutParams
 import android.widget.SeekBar
 import android.widget.Toast
 import kotlinx.android.synthetic.main.dialog.*
-
-var redValue1: Int = 0
+import org.w3c.dom.Text
 
 
 class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, GestureDetector.OnGestureListener {
@@ -71,12 +73,20 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
         return true
     }
 
+    var initialBackgroundColour: Int = 0;
 
+    var redValue1: Int = 0
     var redValue2: Int = 0
     var redValue3: Int = 0
     var greenValue1: Int = 0
     var greenValue2: Int = 0
     var greenValue3: Int = 0
+    var blueValue1: Int = 0
+    var blueValue2: Int = 0
+    var blueValue3: Int = 0
+
+    var colourMod: String = "Default Text"
+
     var message: String = "Default Text"
     var hideGUI: Boolean = false
     var gDetector: GestureDetectorCompat? = null
@@ -121,6 +131,8 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
         System.out.println("Dingo")
         scrollTextView.text = "Welcome to ScrollText"
 
+
+
         //Scroll the TextView
         scrollTextView.textSize = 150f
         scrollTextView.ellipsize = TextUtils.TruncateAt.MARQUEE
@@ -129,6 +141,8 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
         scrollTextView.marqueeRepeatLimit = -1
         scrollTextView.setSingleLine(true)
         scrollTextView.isSelected = true
+        scrollTextView.paintFlags = (0)
+        //
 
 
         //Button Listener to change the message of the scrolling text
@@ -141,13 +155,16 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
         val backgroundColourButton: Button = findViewById(R.id.backgroundColourButton)
         backgroundColourButton.text = "Background"
         backgroundColourButton.setOnClickListener {
+            colourMod = "Background"
             createColourPicker()
 
         }
         val changeTextButton: Button = findViewById(R.id.changeTextButton)
         changeTextButton.text = "Text"
         changeTextButton.setOnClickListener {
+            colourMod = "Text"
             createColourPicker()
+
         }
 
 
@@ -181,6 +198,7 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
     }
 
     //Function to create a ColourPicker
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun createColourPicker() {
 
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
@@ -211,6 +229,37 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
         dialogLayout.addView(seekBarBlue)
         */
 
+        val seekBarTextRed: TextView = TextView(this)
+        val seekBarTextGreen: TextView = TextView(this)
+        val seekBarTextBlue: TextView = TextView(this)
+        val colourPreview: TextView = TextView(this)
+
+        seekBarTextGreen.text = ""
+        seekBarTextBlue.text = ""
+
+
+
+
+        val linear: LinearLayout = LinearLayout(this)
+
+        /*linear.layoutParams = LayoutParams(
+            LayoutParams.MATCH_PARENT - 250,
+            LayoutParams.MATCH_PARENT + 50)
+        */
+
+        linear.orientation = LinearLayout.VERTICAL
+
+        linear.addView(seekBarRed)
+        linear.addView(seekBarTextRed)
+        linear.addView(seekBarGreen)
+        linear.addView(seekBarTextGreen)
+        linear.addView(seekBarBlue)
+        linear.addView(seekBarTextBlue)
+        linear.addView(colourPreview)
+
+
+        builder.setView(linear)
+
         //Set seekbar colours
         //seekBarGreen.getProgressDrawable().setColorFilter(getResources().getColor(R.color.material_blue_grey_800), PorterDuff.Mode.MULTIPLY);
         //seekBarRed.getProgressDrawable().setColorFilter(getResources().getColor(R.color.material_blue_grey_800), PorterDuff.Mode.MULTIPLY);
@@ -234,6 +283,8 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 // Write code to perform some action when progress is changed.
                 redValue1 = progress
+                redValue2 = redValue1
+                seekBarTextRed.text = "Red Value: $redValue1"
                 //System.out.println("Value of Red is: $redValue1 ")
 
                 callToast()
@@ -253,7 +304,9 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
 
         seekBarGreen.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                // Write code to perform some action when progress is changed.
+                greenValue1 = progress
+                seekBarTextGreen.text = "Green Value: $greenValue1"
+                greenValue2 = greenValue1
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -268,7 +321,12 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
 
         seekBarBlue.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                // Write code to perform some action when progress is changed.
+
+
+
+                blueValue1 = progress
+                blueValue2 = blueValue1
+                seekBarTextBlue.text = "Blue Value: $blueValue1"
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -276,14 +334,39 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                // Write code to perform some action when touch is stopped.
+
 
             }
         })
 
-        builder.setView(seekBarRed)
+        initialBackgroundColour = Color.rgb(redValue1,greenValue1,blueValue1)
+        println(initialBackgroundColour)
+
+
+
+        colourPreview.setBackgroundColor(Color.rgb(redValue2,greenValue2,blueValue2))
+
+        //builder.setView(seekBarRed)
+        builder.setView(linear)
 
         builder.setPositiveButton("DONE") { dialog, which ->
+
+            if(colourMod == "Text"){
+                scrollTextView.setTextColor(Color.rgb(redValue1,greenValue1,blueValue1))
+            }else if(colourMod == "Background") {
+                if(redValue1<=240&&greenValue1<=240&&blueValue1<=240){
+                    val view: View = findViewById(R.id.layoutScroll)
+                    val root: View = view.rootView
+                    root.setBackgroundColor(Color.rgb(redValue1, greenValue1, blueValue1))
+                    callInvalidate()
+                    println("bright colour")
+
+                }else {
+                    val view: View = findViewById(R.id.layoutScroll)
+                    val root: View = view.rootView
+                    root.setBackgroundColor(Color.rgb(redValue1, greenValue1, blueValue1))
+                }
+            }
 
         }
         builder.setNegativeButton("CANCEL") { dialog, which ->
@@ -299,6 +382,7 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
         val builder = AlertDialog.Builder(this)
         builder.setMessage("Please Enter Message:")
         val input = EditText(this)
+        input.inputType = InputType.TYPE_CLASS_TEXT
         val lp = LayoutParams(
             LayoutParams.MATCH_PARENT,
             LayoutParams.MATCH_PARENT
@@ -321,6 +405,8 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
                 scrollTextView.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left))
             }
 
+
+
         }
         //Set Negative button. pretty simple.
         builder.setNegativeButton("CANCEL") { dialog, which ->
@@ -330,12 +416,19 @@ class ScrollActivity : AppCompatActivity(),GestureDetector.OnDoubleTapListener, 
         val dialog: AlertDialog = builder.create()
         dialog.show()
 
-
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         this.gDetector?.onTouchEvent(event)
         // Be sure to call the superclass implementation
         return super.onTouchEvent(event)
+    }
+
+    fun callInvalidate(){
+
+        val view: View = findViewById(R.id.layoutScroll)
+        val root: View = view.rootView
+        gd.setColor(Color.BLACK)
+        root.invalidate()
     }
 }
